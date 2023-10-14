@@ -1,30 +1,28 @@
 # https://leetcode.com/problems/minimum-path-sum/
 
-from typing import List, Tuple
+from typing import List, Optional, Tuple
 
 
 class Solution:
 
-    def minPathSum(self, grid: List[List[int]]) -> int:
+    def minPathSum(self, grid: List[List[int]]) -> Optional[int]:
         assert 1 <= len(grid)    <= 200
         assert 1 <= len(grid[0]) <= 200
-        return self.__backtrack((0, 0), grid, 0)
+        min_sum: List[Optional[int]] = [None]
+        self.__backtrack((0, 0), grid, 0, min_sum)
+        return min_sum[0]
 
-    def __backtrack(self, pose: Tuple[int, int], grid: List[List[int]], acc: int) -> int:
+    def __backtrack(self, pose: Tuple[int, int], grid: List[List[int]], acc: int, min_sum: List[Optional[int]]) -> None:
         rows, cols = len(grid), len(grid[0])
         i, j = pose
-        acc += grid[i][j]
-        if i+1 == rows and j+1 == cols:
-            return acc
-        sum_R = self.__backtrack((i, j+1), grid, acc) if j+1 < cols else None
-        sum_D = self.__backtrack((i+1, j), grid, acc) if i+1 < rows else None
-        if (sum_R is not None) and (sum_D is not None):
-            return min(sum_R, sum_D)
-        if (sum_R is not None):
-            return sum_R
-        if (sum_D is not None):
-            return sum_D
-        assert False
+        if i == rows-1 and j == cols-1:
+            acc += grid[i][j]
+            min_sum[0] = min(min_sum[0], acc) if min_sum[0] is not None else acc
+            return
+        if i == rows or j == cols:
+            return
+        self.__backtrack((i, j+1), grid, acc + grid[i][j], min_sum)
+        self.__backtrack((i+1, j), grid, acc + grid[i][j], min_sum)
 
 
 if __name__ == '__main__':
